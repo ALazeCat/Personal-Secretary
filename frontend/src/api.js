@@ -93,10 +93,6 @@ export function chatWithSecretary(payload) {
   });
 }
 
-export function getHistory() {
-  return request("/api/history");
-}
-
 export function getLatestPlan() {
   return request("/api/latest-plan");
 }
@@ -128,16 +124,6 @@ export function updateScheduleItemStatus(planDate, itemIndex, status, completedD
   return request(`/api/plans/${encodeURIComponent(planDate)}/items/${itemIndex}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status, completed_date: completedDate })
-  });
-}
-
-export function getMemory() {
-  return request("/api/memory");
-}
-
-export function resetMemory() {
-  return request("/api/memory/reset", {
-    method: "POST"
   });
 }
 

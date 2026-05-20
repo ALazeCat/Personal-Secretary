@@ -72,7 +72,6 @@ Secretary/
 │   ├── memory.py
 │   ├── model_settings.py
 │   ├── llm_client.py
-│   ├── storage.py
 │   ├── config.py
 │   ├── requirements.txt
 │   └── data/
@@ -171,6 +170,8 @@ The following files are intentionally ignored:
 ```text
 .env
 backend/data/settings.json
+backend/data/history.json
+backend/data/memory.json
 node_modules/
 dist/
 __pycache__/
@@ -275,7 +276,6 @@ Secretary/
 │   ├── memory.py
 │   ├── model_settings.py
 │   ├── llm_client.py
-│   ├── storage.py
 │   ├── config.py
 │   ├── requirements.txt
 │   └── data/
@@ -374,6 +374,8 @@ OPENAI_MODEL=gpt-4o-mini
 ```text
 .env
 backend/data/settings.json
+backend/data/history.json
+backend/data/memory.json
 node_modules/
 dist/
 __pycache__/
@@ -403,4 +405,3 @@ __pycache__/
 - 生成 Android APK
 - 让每个用户在自己手机上保存自己的 API key
 - 减少甚至取消对个人服务器的依赖
-

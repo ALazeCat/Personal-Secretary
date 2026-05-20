@@ -142,12 +142,6 @@ class ChatResponse(BaseModel):
     follow_up_question: Optional[str] = None
 
 
-class MemoryResponse(BaseModel):
-    profile_memory: Dict[str, Any] = Field(default_factory=dict)
-    working_memory: Dict[str, Any] = Field(default_factory=dict)
-    summary_memory: Dict[str, Any] = Field(default_factory=dict)
-
-
 class ProviderOption(BaseModel):
     id: str
     name: str

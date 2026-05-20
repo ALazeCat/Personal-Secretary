@@ -30,7 +30,7 @@ React chat UI
   -> OpenAI API returns JSON
   -> planner.py parses and cleans JSON
   -> ChatResponse returns reply + extracted items + schedule
-  -> storage.py saves the record
+  -> memory.py saves the current plan and recent conversation
 ```
 
 ## Frontend flow

@@ -11,7 +11,6 @@ from memory import (
     get_plans_by_date,
     mark_plan_reviewed,
     get_messages_to_summarize,
-    reset_memory,
     save_chat_turn,
     save_current_plan,
     save_profile_preferences,
@@ -37,13 +36,11 @@ from schemas import (
     GeneratePlanRequest,
     GeneratePlanResponse,
     MemoryContext,
-    MemoryResponse,
     ModelSettingsRequest,
     ModelSettingsResponse,
     ScheduleItemStatusRequest,
     ScheduleItemUpdateRequest,
 )
-from storage import get_history, save_record
 
 
 app = FastAPI(title="Personal AI Secretary")
@@ -146,20 +143,12 @@ def read_root():
 def api_generate_plan(request: GeneratePlanRequest):
     response = generate_plan(request)
     save_current_plan(response.model_dump())
-    save_record(
-        "generated_plan",
-        {"request": request.model_dump(), "response": response.model_dump()},
-    )
     return response
 
 
 @app.post("/api/adjust-plan", response_model=AdjustPlanResponse)
 def api_adjust_plan(request: AdjustPlanRequest):
     response = adjust_plan(request)
-    save_record(
-        "adjusted_plan",
-        {"request": request.model_dump(), "response": response.model_dump()},
-    )
     return response
 
 
@@ -179,10 +168,6 @@ def api_daily_review(request: DailyReviewRequest):
     response = generate_daily_review(enriched_request)
     if enriched_request.review_date and _daily_review_succeeded(response):
         mark_plan_reviewed(enriched_request.review_date)
-    save_record(
-        "daily_review",
-        {"request": enriched_request.model_dump(), "response": response.model_dump()},
-    )
     return response
 
 
@@ -236,26 +221,7 @@ def api_chat(request: ChatRequest):
         )
         updated_memory = apply_summary(summary)
 
-    save_record(
-        "chat",
-        {
-            "request": request.model_dump(),
-            "response": response.model_dump(),
-            "memory_after": updated_memory,
-            "operation_result": operation_result,
-        },
-    )
     return response
-
-
-@app.get("/api/memory", response_model=MemoryResponse)
-def api_memory():
-    return get_memory()
-
-
-@app.post("/api/memory/reset", response_model=MemoryResponse)
-def api_reset_memory():
-    return reset_memory()
 
 
 @app.get("/api/latest-plan")
@@ -272,7 +238,6 @@ def api_plans():
 @app.delete("/api/plans/{plan_date}")
 def api_delete_plan(plan_date: str):
     result = delete_plan(plan_date)
-    save_record("deleted_plan", {"plan_date": plan_date, "deleted": result["deleted"]})
     return result
 
 
@@ -281,10 +246,6 @@ def api_delete_schedule_item(plan_date: str, item_index: int):
     result = delete_schedule_item(plan_date, item_index)
     if not result["deleted"]:
         raise HTTPException(status_code=404, detail="Schedule item was not found.")
-    save_record(
-        "deleted_schedule_item",
-        {"plan_date": plan_date, "item_index": item_index, "deleted": result["deleted"]},
-    )
     return result
 
 
@@ -295,10 +256,6 @@ def api_update_schedule_item(plan_date: str, item_index: int, request: ScheduleI
     if not result["updated"]:
         status_code = 400 if result.get("reason") == "invalid_item" else 404
         raise HTTPException(status_code=status_code, detail="Schedule item could not be updated.")
-    save_record(
-        "updated_schedule_item",
-        {"plan_date": plan_date, "item_index": item_index, "updates": updates},
-    )
     return result
 
 
@@ -307,10 +264,6 @@ def api_update_schedule_item_status(plan_date: str, item_index: int, request: Sc
     result = update_schedule_item_status(plan_date, item_index, request.status, request.completed_date)
     if not result["updated"]:
         raise HTTPException(status_code=404, detail="Schedule item was not found.")
-    save_record(
-        "updated_schedule_item_status",
-        {"plan_date": plan_date, "item_index": item_index, "status": request.status},
-    )
     return result
 
 
@@ -327,8 +280,3 @@ def api_save_settings(request: ModelSettingsRequest):
 @app.post("/api/settings/test")
 def api_test_settings():
     return test_llm_connection()
-
-
-@app.get("/api/history")
-def api_history():
-    return get_history()

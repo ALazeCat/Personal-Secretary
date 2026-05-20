@@ -299,12 +299,6 @@ def get_memory():
     return memory
 
 
-def reset_memory():
-    memory = _default_memory()
-    _write_memory(memory)
-    return memory
-
-
 def save_current_plan(plan_data):
     memory = get_memory()
     memory["working_memory"]["current_plan"] = plan_data

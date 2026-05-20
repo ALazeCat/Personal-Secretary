@@ -1,0 +1,17 @@
+{
+  "profile_memory": {
+    "preferred_language": "en",
+    "wake_up_time": "09:00",
+    "sleep_time": "23:30",
+    "planning_style": "realistic"
+  },
+  "working_memory": {
+    "current_plan": null,
+    "plans_by_date": {},
+    "recent_messages": []
+  },
+  "summary_memory": {
+    "summary": "",
+    "updated_at": null
+  }
+}
